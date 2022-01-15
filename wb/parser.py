@@ -144,8 +144,7 @@ class goparse:
             return
 
 if __name__ == '__main__':
-   myParser = goparse()
-   myParser.run()
+   raise "Файл не предназначен для запуска"
 
 
 

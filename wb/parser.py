@@ -22,7 +22,7 @@ HEADERS = ('Товар',
 class goparse:
 
     ROOT_SITE = 'https://www.wildberries.ru'
-    URL = 'https://www.wildberries.ru/catalog/avtotovary/mototovary'
+    URL = None
 
     def __init__(self):
         self.session = requests.session()
@@ -31,6 +31,9 @@ class goparse:
         self.result = []
         self.max_page = 0
         self.qty_pages = 0
+
+    def set_url(self, url: str):
+        self.URL = url
 
     def load_page(self, page: int = 0):
         url = self.URL
@@ -94,15 +97,27 @@ class goparse:
 
     def run(self):
         url = self.URL
-        res = self.session.get(url)
-        res.raise_for_status()
-        self.pagination_info(res)
-        for page in range(self.qty_pages + 1):
-            logger.info(f'Страница {page} из {self.qty_pages}')
-            text = self.load_page(page=page)
-            self.parse_page(text)
-        logger.info(f'Получили {len(self.result)} элементов')
-        self.save_results()
+        try:
+            res = self.session.get(url)
+        except:
+            logger.info(f'Ошибка URL')
+            return
+        try:
+            res.raise_for_status()
+            self.pagination_info(res)
+            for page in range(self.qty_pages + 1):
+                logger.info(f'Страница {page} из {self.qty_pages}')
+                text = self.load_page(page=page)
+                self.parse_page(text)
+            logger.info(f'Получили {len(self.result)} элементов и  записали в \"res.csv\"')
+        except:
+            logger.info(f'Ошибка парсинга')
+            return
+        try:
+            self.save_results()
+        except:
+            logger.info(f'Ошибка записи в файл \"res.csv\"')
+            return
 
     def save_results(self):
         with open('res.csv','w',encoding='utf-8') as f:

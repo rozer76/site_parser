@@ -131,3 +131,4 @@ dmypy.json
 
 # my ignor
 /wb/res.csv
+/wb/__init__.py
